@@ -17,8 +17,16 @@
     "artis",
     "sdk",
     "storefront",
-    "ecommerce"
+    "ecommerce",
+    "javascript",
+    "typescript",
+    "api",
+    "client"
   ],
+  "author": {
+    "name": "Michael Victor | Yourmix0x",
+    "url": "https://github.com/Yourmix0x"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,7 +41,6 @@
     "type": "git",
     "url": "git+https://github.com/kaizen-Ai-Agent/artis-sdk.git"
   },
-  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/kaizen-Ai-Agent/artis-sdk/issues"
