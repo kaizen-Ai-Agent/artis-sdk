@@ -1,16 +1,37 @@
 {
   "name": "artis-sdk",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
+  "description": "Official JavaScript/TypeScript SDK for the Artis platform",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup --clean",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit"
   },
+  "keywords": [
+    "artis",
+    "sdk",
+    "storefront",
+    "ecommerce"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kaizen-Ai-Agent/artis-sdk.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
