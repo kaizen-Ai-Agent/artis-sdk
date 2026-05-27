@@ -9,6 +9,8 @@ export interface ArtisConfig {
   baseUrl: string;
   /** Your API key — keep this in environment variables, never hardcode it */
   apiKey: string;
+  /** Optional user token used for customer-specific endpoints */
+  userToken?: string;
   /** Switches between test and production endpoints automatically */
   env?: ArtisEnv;
 }
@@ -18,10 +20,16 @@ export class ArtisApp {
   public readonly products: ProductsModule;
 
   constructor(config: ArtisConfig) {
-    const client = new HttpClient({
+    const clientConfig = {
       baseUrl: this.resolveBaseUrl(config),
       apiKey: config.apiKey,
-    });
+    } as const;
+
+    const client = new HttpClient(
+      config.userToken !== undefined
+        ? { ...clientConfig, userToken: config.userToken }
+        : clientConfig,
+    );
 
     this.storefront = new StorefrontModule(client);
     this.products = new ProductsModule(client);

@@ -3,11 +3,14 @@ import { ApiResponse, ArtisApiError } from "./types/common.js";
 export interface HttpClientConfig {
   baseUrl: string;
   apiKey: string;
+  // Optional default token for customer-specific endpoints.
+  userToken?: string;
 }
 
 export class HttpClient {
   private baseUrl: string;
   private apiKey: string;
+  private userToken: string | undefined;
 
   constructor(config: HttpClientConfig) {
     // Normalize baseUrl so it always has a trailing slash
@@ -15,16 +18,22 @@ export class HttpClient {
       ? config.baseUrl
       : `${config.baseUrl}/`;
     this.apiKey = config.apiKey;
+    this.userToken = config.userToken;
   }
 
   private buildHeaders(): HeadersInit {
-    return {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Accept: "application/json",
-      // X-API-Key is the standard header for API keys.
-      // This is different from Authorization: Bearer which is for user tokens.
+      // API key always goes on every request — identifies the store
       "X-API-Key": this.apiKey,
     };
+
+    if (this.userToken) {
+      headers["Authorization"] = `Bearer ${this.userToken}`;
+    }
+
+    return headers;
   }
 
   private buildUrl(

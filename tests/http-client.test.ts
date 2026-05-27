@@ -49,6 +49,27 @@ describe("HttpClient", () => {
     });
   });
 
+  it("uses default user token when configured", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: async () => okResponse,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = new HttpClient({
+      baseUrl: "https://api.example.com",
+      apiKey: "test-key",
+      userToken: "default-token",
+    });
+
+    await client.get("/me");
+
+    const firstInit = fetchMock.mock.calls[0][1] as RequestInit;
+
+    expect(firstInit.headers).toMatchObject({
+      Authorization: "Bearer default-token",
+    });
+  });
+
   it("sends JSON bodies only when provided", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: async () => okResponse,
