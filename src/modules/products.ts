@@ -21,9 +21,9 @@ export class ProductsModule {
     return this.client.get<Product>(`/products/${id}`);
   }
 
-  // GET /products/slug/:slug
+  // GET /products/:slug
   getBySlug(slug: string): Promise<ApiResponse<Product>> {
-    return this.client.get<Product>(`/products/slug/${slug}`);
+    return this.client.get<Product>(`/products/${slug}`);
   }
 
   // GET /products/search?q=...
@@ -36,15 +36,5 @@ export class ProductsModule {
       q: query,
       ...(params as Record<string, string | number | boolean>),
     });
-  }
-
-  // GET /products/featured
-  getFeatured(): Promise<ApiResponse<Product[]>> {
-    return this.client.get<Product[]>("/products/featured");
-  }
-
-  // GET /products/latest
-  getLatest(): Promise<ApiResponse<Product[]>> {
-    return this.client.get<Product[]>("/products/latest");
   }
 }

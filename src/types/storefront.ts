@@ -1,5 +1,7 @@
 import type { Product } from "./products.js";
 
+// ─── Category ─────────────────────────────────────────────────────────────────
+
 export interface Category {
   id: number;
   name: string;
@@ -10,24 +12,10 @@ export interface Category {
   sort_order: number;
 }
 
-export interface CmsBlock {
-  key: string;
-  title: string;
-  // HTML string
-  content: string;
-  meta: Record<string, string>;
-}
-
-export interface HomeCms {
-  hero: CmsBlock;
-  about: CmsBlock;
-  // platform can introduce new CMS blocks without SDK changes
-  [key: string]: CmsBlock;
-}
+// ─── Home ─────────────────────────────────────────────────────────────────────
 
 export interface HomePage {
   categories: Category[];
   featured_products: Product[];
   latest_products: Product[];
-  cms: HomeCms;
 }

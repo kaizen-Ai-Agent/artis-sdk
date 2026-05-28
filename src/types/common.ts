@@ -11,15 +11,22 @@ export interface ApiResponse<T> {
 }
 
 /**
+ * Interface for the pagination metadata.
+ */
+export interface Pagination {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+/**
  * Returned by any endpoint that paginates its results.
  * T is the item type, e.g. PaginatedData<Product>
  */
 export interface PaginatedData<T> {
-  items: T[];
-  total: number;
-  page: number;
-  per_page: number;
-  last_page: number;
+  data: T[];
+  pagination: Pagination;
 }
 
 /**
