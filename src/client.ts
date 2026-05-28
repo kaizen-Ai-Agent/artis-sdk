@@ -21,6 +21,13 @@ export class HttpClient {
     this.userToken = config.userToken;
   }
 
+  /** Update the user token after login.
+   * Called internally by ArtisApp.setUserToken()
+   */
+  setUserToken(token: string | undefined): void {
+    this.userToken = token;
+  }
+
   private buildHeaders(): HeadersInit {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
