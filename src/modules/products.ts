@@ -1,40 +1,50 @@
 import { HttpClient } from "../client.js";
 import { Product, ProductListParams } from "../types/products.js";
-import { PaginatedData } from "../types/common.js";
+import { ApiResponse, PaginatedData } from "../types/common.js";
 
 export class ProductsModule {
   constructor(private client: HttpClient) {}
 
-  list(params?: ProductListParams): Promise<PaginatedData<Product>> {
+  // GET /products
+  // Supports pagination, filtering, and sorting via query parameters
+  list(
+    params?: ProductListParams,
+  ): Promise<ApiResponse<PaginatedData<Product>>> {
     return this.client.get<PaginatedData<Product>>(
       "/products",
       params as Record<string, string | number | boolean>,
     );
   }
 
-  getById(id: number): Promise<Product> {
+  // GET /products/:id
+  getById(id: number): Promise<ApiResponse<Product>> {
     return this.client.get<Product>(`/products/${id}`);
   }
 
-  getBySlug(slug: string): Promise<Product> {
+  // GET /products/slug/:slug
+  getBySlug(slug: string): Promise<ApiResponse<Product>> {
     return this.client.get<Product>(`/products/slug/${slug}`);
   }
 
+  // GET /products/search?q=...
+  // Supports the same pagination, filtering, and sorting parameters as list()
   search(
     query: string,
     params?: Omit<ProductListParams, "search">,
-  ): Promise<PaginatedData<Product>> {
+  ): Promise<ApiResponse<PaginatedData<Product>>> {
     return this.client.get<PaginatedData<Product>>("/products/search", {
       q: query,
       ...(params as Record<string, string | number | boolean>),
     });
   }
 
-  getFeatured(): Promise<Product[]> {
+  // GET /products/featured
+  getFeatured(): Promise<ApiResponse<Product[]>> {
     return this.client.get<Product[]>("/products/featured");
   }
 
-  getLatest(): Promise<Product[]> {
+  // GET /products/latest
+  getLatest(): Promise<ApiResponse<Product[]>> {
     return this.client.get<Product[]>("/products/latest");
   }
 }

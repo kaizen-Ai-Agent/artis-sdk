@@ -1,6 +1,7 @@
 import { HttpClient } from "./client.js";
 import { StorefrontModule } from "./modules/storefront.js";
 import { ProductsModule } from "./modules/products.js";
+import { AuthModule } from "./modules/auth.js";
 
 export type ArtisEnv = "local" | "testing" | "prod" | "live";
 
@@ -18,6 +19,7 @@ export interface ArtisConfig {
 export class ArtisApp {
   public readonly storefront: StorefrontModule;
   public readonly products: ProductsModule;
+  public readonly auth: AuthModule;
 
   constructor(config: ArtisConfig) {
     const clientConfig = {
@@ -33,6 +35,7 @@ export class ArtisApp {
 
     this.storefront = new StorefrontModule(client);
     this.products = new ProductsModule(client);
+    this.auth = new AuthModule(client);
   }
 
   private resolveBaseUrl(config: ArtisConfig): string {

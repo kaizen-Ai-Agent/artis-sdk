@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { ArtisApiError } from "../src/types/common.js";
+import { ApiResponse } from "../src/types/common.js";
 import { HttpClient } from "../src/client.js";
 
 const okResponse = {
@@ -41,7 +41,7 @@ describe("HttpClient", () => {
     expect(parsed.searchParams.get("page")).toBe("1");
     expect(parsed.searchParams.get("featured")).toBe("true");
     expect(init.method).toBe("GET");
-    expect(data).toEqual(okResponse.data);
+    expect(data).toEqual(okResponse);
     expect(init.headers).toMatchObject({
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -91,7 +91,7 @@ describe("HttpClient", () => {
     expect(secondInit.body).toBeUndefined();
   });
 
-  it("throws ArtisApiError on failed responses", async () => {
+  it("returns error envelope for failed responses", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: async () => ({
         success: false,
@@ -107,8 +107,9 @@ describe("HttpClient", () => {
       apiKey: "test-key",
     });
 
-    await expect(client.get("/products/999")).rejects.toBeInstanceOf(
-      ArtisApiError,
-    );
+    const data = await client.get<ApiResponse<null>>("/products/999");
+
+    expect(data.success).toBe(false);
+    expect(data.status).toBe(404);
   });
 });

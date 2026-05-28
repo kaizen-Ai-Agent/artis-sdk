@@ -1,12 +1,14 @@
 export interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
+  firstname: string;
+  lastname: string;
   email: string;
-  phone: string | null;
-  avatar: string | null;
-  is_verified: boolean;
+  phone: string;
+  status: string;
+  updated_at: string;
   created_at: string;
+  id: number;
+  fullname?: string;
+  is_active?: boolean;
 }
 
 export interface LoginPayload {
@@ -15,28 +17,29 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  first_name: string;
-  last_name: string;
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
   password_confirmation: string;
-  phone?: string;
+  phone: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
-  token_type: string; // "Bearer"
-  expires_in: number; // seconds
+  message?: string;
+  user?: User;
+  token?: TokenResponse;
 }
 
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
+export interface UpdateProfilePayload {
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
 }

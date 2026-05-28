@@ -67,22 +67,17 @@ export class HttpClient {
     return init;
   }
 
-  // Unwraps the ApiResponse envelope and returns data directly.
-  // Throws ArtisApiError if success is false so callers can catch it cleanly.
-  private async handleResponse<T>(response: Response): Promise<T> {
+  // Returns the ApiResponse envelope so callers can inspect status/message.
+  private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     const json: ApiResponse<T> = await response.json();
 
-    if (!json.success) {
-      throw new ArtisApiError(json);
-    }
-
-    return json.data;
+    return json;
   }
 
   async get<T>(
     path: string,
     params?: Record<string, string | number | boolean>,
-  ): Promise<T> {
+  ): Promise<ApiResponse<T>> {
     const response = await fetch(this.buildUrl(path, params), {
       method: "GET",
       headers: this.buildHeaders(),
@@ -90,7 +85,7 @@ export class HttpClient {
     return this.handleResponse<T>(response);
   }
 
-  async post<T>(path: string, body?: unknown): Promise<T> {
+  async post<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
     const response = await fetch(
       this.buildUrl(path),
       this.buildJsonInit("POST", body),
@@ -98,7 +93,7 @@ export class HttpClient {
     return this.handleResponse<T>(response);
   }
 
-  async put<T>(path: string, body?: unknown): Promise<T> {
+  async put<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
     const response = await fetch(
       this.buildUrl(path),
       this.buildJsonInit("PUT", body),
@@ -106,7 +101,7 @@ export class HttpClient {
     return this.handleResponse<T>(response);
   }
 
-  async patch<T>(path: string, body?: unknown): Promise<T> {
+  async patch<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
     const response = await fetch(
       this.buildUrl(path),
       this.buildJsonInit("PATCH", body),
@@ -114,7 +109,7 @@ export class HttpClient {
     return this.handleResponse<T>(response);
   }
 
-  async delete<T>(path: string): Promise<T> {
+  async delete<T>(path: string): Promise<ApiResponse<T>> {
     const response = await fetch(this.buildUrl(path), {
       method: "DELETE",
       headers: this.buildHeaders(),

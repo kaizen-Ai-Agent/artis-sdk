@@ -65,7 +65,7 @@ describe("Modules", () => {
     expect(parsed.searchParams.get("page")).toBe("2");
     expect(parsed.searchParams.get("per_page")).toBe("10");
     expect(parsed.searchParams.get("featured")).toBe("true");
-    expect(data).toEqual(okResponse.data);
+    expect(data).toEqual(okResponse);
   });
 
   it("StorefrontModule.getCategoryProducts forwards page params", async () => {
@@ -93,6 +93,6 @@ describe("Modules", () => {
     expect(parsed.pathname).toBe("/categories/12/products");
     expect(parsed.searchParams.get("page")).toBe("3");
     expect(parsed.searchParams.get("per_page")).toBe("24");
-    expect(data).toEqual(okResponse.data);
+    expect(data).toEqual(okResponse);
   });
 });

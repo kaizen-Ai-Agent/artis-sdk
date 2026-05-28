@@ -1,31 +1,36 @@
 import { HttpClient } from "../client.js";
 import { HomePage, Category } from "../types/storefront.js";
-import { PaginatedData } from "../types/common.js";
+import { ApiResponse, PaginatedData } from "../types/common.js";
 import { Product } from "../types/products.js";
 
 export class StorefrontModule {
   constructor(private client: HttpClient) {}
 
-  getHome(): Promise<HomePage> {
+  // GET /home
+  getHome(): Promise<ApiResponse<HomePage>> {
     return this.client.get<HomePage>("/home");
   }
 
-  getCategories(): Promise<Category[]> {
+  // GET /categories
+  getCategories(): Promise<ApiResponse<Category[]>> {
     return this.client.get<Category[]>("/categories");
   }
 
-  getCategory(id: number): Promise<Category> {
+  // GET /categories/:id
+  getCategory(id: number): Promise<ApiResponse<Category>> {
     return this.client.get<Category>(`/categories/${id}`);
   }
 
-  getCategoryBySlug(slug: string): Promise<Category> {
+  // GET /categories/slug/:slug
+  getCategoryBySlug(slug: string): Promise<ApiResponse<Category>> {
     return this.client.get<Category>(`/categories/slug/${slug}`);
   }
 
+  // GET /categories/:id/products
   getCategoryProducts(
     id: number,
     params?: { page?: number; per_page?: number },
-  ): Promise<PaginatedData<Product>> {
+  ): Promise<ApiResponse<PaginatedData<Product>>> {
     return this.client.get<PaginatedData<Product>>(
       `/categories/${id}/products`,
       params as Record<string, number>,
