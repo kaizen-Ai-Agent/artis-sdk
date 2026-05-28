@@ -2,22 +2,25 @@ import { HttpClient } from "../client.js";
 import { ApiResponse } from "../types/common.js";
 import {
   User,
-  AuthResponse,
   LoginPayload,
   RegisterPayload,
+  LoginResponse,
+  RegisterResponse,
+  Token,
+  UpdateProfilePayload,
 } from "../types/auth.js";
 
 export class AuthModule {
   constructor(private client: HttpClient) {}
 
   // POST /customer/login
-  login(payload: LoginPayload): Promise<ApiResponse<AuthResponse>> {
-    return this.client.post<AuthResponse>("/customer/login", payload);
+  login(payload: LoginPayload): Promise<ApiResponse<LoginResponse>> {
+    return this.client.post<LoginResponse>("/customer/login", payload);
   }
 
   // POST /customer/register
-  register(payload: RegisterPayload): Promise<ApiResponse<AuthResponse>> {
-    return this.client.post<AuthResponse>("/customer/register", payload);
+  register(payload: RegisterPayload): Promise<ApiResponse<RegisterResponse>> {
+    return this.client.post<RegisterResponse>("/customer/register", payload);
   }
 
   // POST /customer/logout
@@ -26,7 +29,7 @@ export class AuthModule {
   }
 
   // PATCH /customer/profile
-  updateProfile(payload: Partial<User>): Promise<ApiResponse<User>> {
+  updateProfile(payload: UpdateProfilePayload): Promise<ApiResponse<User>> {
     return this.client.patch<User>("/customer/profile", payload);
   }
 
@@ -38,7 +41,7 @@ export class AuthModule {
 
   // POST /customer/refresh
   // Get a fresh token using the current one
-  refresh(): Promise<ApiResponse<AuthResponse>> {
-    return this.client.post<AuthResponse>("/customer/refresh");
+  refresh(): Promise<ApiResponse<Token>> {
+    return this.client.post<Token>("/customer/refresh");
   }
 }

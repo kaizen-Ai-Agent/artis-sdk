@@ -1,3 +1,5 @@
+// ─── User ─────────────────────────────────────────────────────────────────────
+
 export interface User {
   firstname: string;
   lastname: string;
@@ -11,10 +13,16 @@ export interface User {
   is_active?: boolean;
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
+// ─── Token ─────────────────────────────────────────────────────────────────────
+
+export interface Token {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
 }
+
+// ─── Auth payloads ────────────────────────────────────────────────────────────
+
 
 export interface RegisterPayload {
   firstname: string;
@@ -25,16 +33,9 @@ export interface RegisterPayload {
   phone: string;
 }
 
-export interface TokenResponse {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-export interface AuthResponse {
-  message?: string;
-  user?: User;
-  token?: TokenResponse;
+export interface LoginPayload {
+  email: string;
+  password: string;
 }
 
 export interface UpdateProfilePayload {
@@ -42,4 +43,15 @@ export interface UpdateProfilePayload {
   lastname?: string;
   email?: string;
   phone?: string;
+}
+
+// ─── Auth responses ────────────────────────────────────────────────────────────
+
+export interface RegisterResponse {
+  user: User;
+  token: Token;
+}
+
+export interface LoginResponse {
+  token: Token;
 }

@@ -4,7 +4,8 @@
  */
 export interface ApiResponse<T> {
   success: boolean;
-  status: number;
+  status: string;
+  status_code: number;
   message: string;
   data: T;
 }
@@ -43,7 +44,7 @@ export class ArtisApiError extends Error {
   constructor(response: ApiResponse<unknown>) {
     super(response.message);
     this.name = "ArtisApiError";
-    this.status = response.status;
+    this.status = response.status_code;
     this.raw = response;
   }
 }
