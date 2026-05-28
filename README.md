@@ -42,11 +42,8 @@ const categories = await app.storefront.getCategories();
 const category = await app.storefront.getCategory(1);
 const category = await app.storefront.getCategoryBySlug("bread");
 
-// Products under a category
-const products = await app.storefront.getCategoryProducts(1, {
-  page: 1,
-  per_page: 20,
-});
+// All images in the gallery
+const gallery = await app.storefront.getGallery();
 ```
 
 ---
@@ -58,7 +55,11 @@ const products = await app.storefront.getCategoryProducts(1, {
 const products = await app.products.list({ page: 1, per_page: 20 });
 
 // With filters and sorting
-const products = await app.products.list({ category_id: 2, sort: "price_asc" });
+const products = await app.products.list({
+  featured: true,
+  category: "bag",
+  page: 1,
+});
 
 // Single product by id or slug
 const product = await app.products.getById(42);
@@ -66,10 +67,6 @@ const product = await app.products.getBySlug("sourdough-bread");
 
 // Search
 const results = await app.products.search("sourdough");
-
-// Featured and latest
-const featured = await app.products.getFeatured();
-const latest = await app.products.getLatest();
 ```
 
 ---
