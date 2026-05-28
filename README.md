@@ -17,6 +17,8 @@ import { initArtis } from 'artis-sdk'
 const app = initArtis({
   baseUrl: 'https://api.yourstore.com',
   apiKey: process.env.ARTIS_API_KEY,
+  // Optional: pass a user token for customer endpoints
+  userToken: localStorage.getItem('artis_token') ?? undefined,
   env: 'prod', // 'local' | 'testing' | 'prod' | 'live'
 })
 ```
@@ -28,6 +30,9 @@ Call `initArtis` once and reuse the `app` instance across your project.
 ```typescript
 // Everything needed for the homepage in one call
 const home = await app.storefront.getHome()
+if (home.success) {
+  console.log(home.data)
+}
 
 // All active categories
 const categories = await app.storefront.getCategories()
@@ -59,20 +64,33 @@ const results = await app.products.search('sourdough')
 // Featured and latest
 const featured = await app.products.getFeatured()
 const latest   = await app.products.getLatest()
+
+// Every call returns the ApiResponse envelope
+if (featured.success) {
+  console.log(featured.data)
+}
 ```
 
-## Error handling
+## Auth
 
 ```typescript
-import { ArtisApiError } from 'artis-sdk'
+const login = await app.auth.login({
+  email: 'test@example.com',
+  password: 'password',
+})
 
-try {
-  const product = await app.products.getById(999)
-} catch (err) {
-  if (err instanceof ArtisApiError) {
-    console.log(err.status)  // 404
-    console.log(err.message) // "Product not found"
-  }
+if (login.success && login.data.token) {
+  localStorage.setItem('artis_token', login.data.token.access_token)
+}
+```
+
+## Response handling
+
+```typescript
+const product = await app.products.getById(999)
+if (!product.success) {
+  console.log(product.status)  // 404
+  console.log(product.message) // "Product not found"
 }
 ```
 
@@ -81,7 +99,7 @@ try {
 All types are built in — no separate `@types` package needed.
 
 ```typescript
-import type { HomePage, Product, Category, PaginatedData } from 'artis-sdk'
+import type { ApiResponse, HomePage, Product, Category, PaginatedData, AuthResponse } from 'artis-sdk'
 ```
 
 ## Environment switching

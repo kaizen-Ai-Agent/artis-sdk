@@ -1,4 +1,4 @@
-import { ApiResponse, ArtisApiError } from "./types/common.js";
+import { ApiResponse } from "./types/common.js";
 
 export interface HttpClientConfig {
   baseUrl: string;

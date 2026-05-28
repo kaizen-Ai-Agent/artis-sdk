@@ -1,11 +1,11 @@
 import { HttpClient } from "../client.js";
+import { ApiResponse } from "../types/common.js";
 import {
   User,
   AuthResponse,
   LoginPayload,
   RegisterPayload,
 } from "../types/auth.js";
-import { ApiResponse } from "../types/common.js";
 
 export class AuthModule {
   constructor(private client: HttpClient) {}

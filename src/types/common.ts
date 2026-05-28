@@ -1,7 +1,6 @@
 /**
  * The shape every Artis API endpoint returns.
- * The HttpClient unwraps this automatically, so module methods
- * just return T — callers never deal with this wrapper directly.
+ * The SDK returns this envelope so callers can read status/message/data.
  */
 export interface ApiResponse<T> {
   success: boolean;
@@ -23,8 +22,8 @@ export interface PaginatedData<T> {
 }
 
 /**
- * Thrown when the API returns success: false.
- * Catch this to read a human-readable message and HTTP status code.
+ * Optional helper for consumers who prefer throwing on API failures.
+ * The SDK does not throw this by default.
  *
  * @example
  * import { ArtisApiError } from 'artis-sdk'
