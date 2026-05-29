@@ -5,25 +5,6 @@ Works in Node.js, Next.js, Vue, Svelte, Express — anywhere JavaScript runs.
 
 ---
 
-## Table of contents
-
-- Install
-- Setup
-- Modules
-- Storefront
-- Products
-- Auth
-- Orders
-- Cart
-- Bookings
-- Response shape
-- Pagination
-- Error handling
-- TypeScript
-- Environment switching
-- Development
-- Publishing
-
 ## Install
 
 ```bash
