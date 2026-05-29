@@ -4,6 +4,8 @@ import { ProductsModule } from "./modules/products.js";
 import { AuthModule } from "./modules/auth.js";
 import { OrderModule } from "./modules/order.js";
 import { BusinessModule } from "./modules/business.js";
+import { CartModule } from "./modules/cart.js";
+import { BookingModule } from "./modules/booking.js";
 
 export type ArtisEnv = "local" | "testing" | "prod" | "live";
 
@@ -34,6 +36,8 @@ export class ArtisApp {
   public readonly auth: AuthModule;
   public readonly business: BusinessModule;
   public readonly orders: OrderModule;
+  public readonly cart: CartModule;
+  public readonly bookings: BookingModule;
 
   private client: HttpClient;
 
@@ -54,6 +58,8 @@ export class ArtisApp {
     this.auth = new AuthModule(this.client);
     this.business = new BusinessModule(this.client);
     this.orders = new OrderModule(this.client);
+    this.cart = new CartModule(this.client);
+    this.bookings = new BookingModule(this.client);
   }
 
   /**

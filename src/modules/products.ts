@@ -37,4 +37,14 @@ export class ProductsModule {
       ...(params as Record<string, string | number | boolean>),
     });
   }
+
+  // GET /products/featured
+  getFeatured(): Promise<ApiResponse<Product[]>> {
+    return this.client.get<Product[]>("/products/featured");
+  }
+
+  // GET /products/addon
+  getAddons(): Promise<ApiResponse<Product[]>> {
+    return this.client.get<Product[]>("/products/addon");
+  }
 }
