@@ -356,9 +356,24 @@ npm run lint    # type check only
 npm run test    # run tests
 ```
 
-## Publishing
+---
 
-```bash
-npm run build
-npm publish --access public
-```
+## Contributing
+
+All contributions are welcome! If you find a bug or have a feature request, feel free to create an issue or a PR.
+
+- Issues: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/issues)
+- Pull requests: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/pulls)
+
+---
+
+## Support
+
+If you find this SDK helpful, please star the repo and share it with others. Your support keeps the project moving.
+
+---
+
+## License
+
+MIT License — see the LICENSE file for details: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/blob/main/LICENSE)
+

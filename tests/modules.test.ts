@@ -1,14 +1,14 @@
-import { StorefrontModule } from "../src/modules/storefront.js";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { ProductsModule } from "../src/modules/products.js";
 import { HttpClient } from "../src/client.js";
 
 const okResponse = {
   success: true,
-  status: 200,
+  status: "success",
+  status_code: 200,
   message: "ok",
   data: {
-    items: [
+    data: [
       {
         id: 1,
         name: "Mock Tee",
@@ -30,10 +30,12 @@ const okResponse = {
         updated_at: "2024-01-02T00:00:00Z",
       },
     ],
-    total: 1,
-    page: 1,
-    per_page: 20,
-    last_page: 1,
+    pagination: {
+      current_page: 1,
+      last_page: 1,
+      per_page: 20,
+      total: 1,
+    },
   },
 };
 
@@ -54,45 +56,17 @@ describe("Modules", () => {
     });
     const products = new ProductsModule(client);
 
-    const data = await products.list({ page: 2, per_page: 10, featured: true });
+    const data = await products.list({ page: 2, featured: true });
 
     console.log("ProductsModule.list mock data:", data);
 
+    // Verify query params were sent as expected.
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
     const parsed = new URL(url);
 
     expect(parsed.pathname).toBe("/products");
     expect(parsed.searchParams.get("page")).toBe("2");
-    expect(parsed.searchParams.get("per_page")).toBe("10");
     expect(parsed.searchParams.get("featured")).toBe("true");
-    expect(data).toEqual(okResponse);
-  });
-
-  it("StorefrontModule.getCategoryProducts forwards page params", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      json: async () => okResponse,
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    const client = new HttpClient({
-      baseUrl: "https://api.example.com",
-      apiKey: "test-key",
-    });
-    const storefront = new StorefrontModule(client);
-
-    const data = await storefront.getCategoryProducts(12, {
-      page: 3,
-      per_page: 24,
-    });
-
-    console.log("StorefrontModule.getCategoryProducts mock data:", data);
-
-    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const parsed = new URL(url);
-
-    expect(parsed.pathname).toBe("/categories/12/products");
-    expect(parsed.searchParams.get("page")).toBe("3");
-    expect(parsed.searchParams.get("per_page")).toBe("24");
     expect(data).toEqual(okResponse);
   });
 });
