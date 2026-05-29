@@ -5,6 +5,25 @@ Works in Node.js, Next.js, Vue, Svelte, Express — anywhere JavaScript runs.
 
 ---
 
+## Table of contents
+
+- Install
+- Setup
+- Modules
+- Storefront
+- Products
+- Auth
+- Orders
+- Cart
+- Bookings
+- Response shape
+- Pagination
+- Error handling
+- TypeScript
+- Environment switching
+- Development
+- Publishing
+
 ## Install
 
 ```bash
@@ -26,6 +45,20 @@ const app = initArtis({
 ```
 
 Call `initArtis` once and reuse the `app` instance across your project.
+
+---
+
+## Modules
+
+The SDK exposes these modules:
+
+- `storefront`
+- `products`
+- `auth`
+- `orders`
+- `cart`
+- `bookings`
+- `business`
 
 ---
 
@@ -82,6 +115,7 @@ you are responsible for persisting it in your own storage.
 Returns the new user and an access token.
 
 ```typescript
+// Register a new user and get an access token in response
 const res = await app.auth.register({
   firstname: "John",
   lastname: "Doe",
@@ -91,6 +125,7 @@ const res = await app.auth.register({
   phone: "08012345678",
 });
 
+// Set the token so subsequent requests go out authenticated
 if (res.success) {
   const { user, token } = res.data;
   app.setUserToken(token.access_token);
@@ -104,38 +139,17 @@ Returns an access token. Call `setUserToken` immediately after so all
 subsequent requests go out authenticated.
 
 ```typescript
+// Login an existing user and get an access token in response
 const res = await app.auth.login({
   email: "john@example.com",
   password: "password",
 });
 
+// Set the token so subsequent requests go out authenticated
 if (res.success) {
   app.setUserToken(res.data.token.access_token);
   localStorage.setItem("artis_token", res.data.token.access_token);
 }
-```
-
-### Get current user
-
-```typescript
-const res = await app.auth.me();
-if (res.success) {
-  console.log(res.data.fullname);
-}
-```
-
-### Update profile
-
-```typescript
-const res = await app.auth.updateProfile({ firstname: "Jane" });
-```
-
-### Logout
-
-```typescript
-await app.auth.logout();
-app.clearUserToken();
-localStorage.removeItem("artis_token");
 ```
 
 ### Restore session on app boot
@@ -157,6 +171,81 @@ const token = localStorage.getItem("artis_token");
 if (token) app.setUserToken(token);
 ```
 
+### Get current user
+
+```typescript
+// Get the currently logged-in user's details
+const res = await app.auth.me();
+if (res.success) {
+  console.log(res.data.fullname);
+}
+```
+
+### Update profile
+
+```typescript
+// Update the logged-in user's profile
+const res = await app.auth.updateProfile({ firstname: "Jane" });
+```
+
+### Logout
+
+```typescript
+// Log out the current user and clear the token
+await app.auth.logout();
+app.clearUserToken();
+localStorage.removeItem("artis_token");
+```
+
+---
+
+## Orders
+
+```typescript
+// Create a new order
+const order = await app.orders.create({
+  customer_name: "John Doe",
+  customer_email: "john@example.com",
+  customer_phone: "08012345678",
+  delivery_type: "delivery",
+  delivery_address: "12 Cocoa Street, Ibadan",
+  delivery_date: "2026-05-01",
+  payment_channel: "paystack",
+  items: [{ product_id: 4, variant_combination_id: 143, quantity: 2 }],
+});
+```
+
+---
+
+## Cart
+
+```typescript
+// Calculate the total for a cart before checkout
+const calc = await app.cart.calculate({
+  items: [{ product_id: 10, quantity: 2 }],
+  delivery_type: "delivery",
+});
+```
+
+---
+
+## Bookings
+
+```typescript
+// Check available timeslots for consultations or appointments
+const slots = await app.bookings.availability();
+
+// Create a new booking for a consultation or appointment
+const booking = await app.bookings.create({
+  customer_name: "Jane Doe",
+  customer_email: "jane@example.com",
+  customer_phone: "+34600123456",
+  timeslot_id: 1,
+  consultation_type: "wedding_cake",
+  notes: "Looking for a 3-tier rustic design.",
+});
+```
+
 ---
 
 ## Response shape
@@ -164,10 +253,12 @@ if (token) app.setUserToken(token);
 Every method returns the full `ApiResponse<T>` envelope:
 
 ```typescript
+// Generic API response shape
 {
   success: boolean;
-  status: number;
-  message: string;
+  status: string; // e.g. "success"
+  status_code: number; // e.g. 200
+  message: string; // human-readable
   data: T;
 }
 ```
@@ -175,14 +266,57 @@ Every method returns the full `ApiResponse<T>` envelope:
 Always check `success` before using `data`:
 
 ```typescript
+// Example: get a product by id and handle success and error cases
 const res = await app.products.getById(42);
 
+// Handle success case
 if (res.success) {
   console.log(res.data.name); // typed as Product
 } else {
-  console.log(res.status); // e.g. 404
+  // Handle error case
+  console.log(res.status_code); // e.g. 404
   console.log(res.message); // e.g. "Product not found"
 }
+```
+
+---
+
+## Pagination
+
+Paginated endpoints return a nested pagination object inside `data`:
+
+```typescript
+// Generic paginated response shape
+{
+  data: T[];
+  pagination: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+```
+
+---
+
+## Error handling
+
+The SDK returns the API response envelope and does not throw by default.
+Check `success` and handle errors using `status_code` and `message`.
+
+```typescript
+// Example: tracking an order that doesn't exist
+const res = await app.orders.track("TEN-PAY-69ef51be845ff");
+
+// Handle error case
+if (!res.success) {
+  console.error(res.status_code, res.message);
+  return;
+}
+
+// Handle success case
+console.log(res.data);
 ```
 
 ---
@@ -191,16 +325,27 @@ if (res.success) {
 
 All types are built in — no separate `@types` package needed.
 
+Exported types include:
+
+- Core: `ApiResponse`, `Pagination`, `PaginatedData`, `ArtisApiError`
+- Auth: `User`, `Token`, `RegisterPayload`, `LoginPayload`, `UpdateProfilePayload`, `RegisterResponse`, `LoginResponse`
+- Storefront: `Category`, `HomePage`
+- Products: `Product`, `ProductImage`, `ProductListParams`
+- Orders: `OrderItemAddon`, `OrderItem`, `CreateOrderPayload`, `CreateOrderResponse`, `OrderTrackingItem`, `OrderTrackingTimelineEntry`, `OrderTrackingResponse`, `MyOrder`
+- Cart: `CartItemInput`, `CartCalculatePayload`, `CartCalculatedItem`, `CartSummary`, `CartCalculationResponse`
+- Bookings: `BookingAvailability`, `CreateBookingPayload`, `CreateBookingResponse`
+- Business: `DaySchedule`, `OpeningHours`, `Business`, `Theme`, `Social`, `Settings`
+
 ```typescript
+// Example: importing types for type annotations
 import type {
   ApiResponse,
-  HomePage,
+  PaginatedData,
   Product,
   Category,
-  PaginatedData,
-  User,
   LoginResponse,
-  RegisterResponse,
+  CreateOrderPayload,
+  CartCalculationResponse,
 } from "artis-sdk";
 ```
 
