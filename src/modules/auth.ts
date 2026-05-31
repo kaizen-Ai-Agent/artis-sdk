@@ -8,6 +8,9 @@ import {
   RegisterResponse,
   Token,
   UpdateProfilePayload,
+  ResetPasswordPayload,
+  SendOtp,
+  VerifyAccount,
 } from "../types/auth.js";
 
 export class AuthModule {
@@ -21,6 +24,21 @@ export class AuthModule {
   // POST /customer/register
   register(payload: RegisterPayload): Promise<ApiResponse<RegisterResponse>> {
     return this.client.post<RegisterResponse>("/customer/register", payload);
+  }
+
+  // POST /customer/reset-password
+  resetPassword(payload: ResetPasswordPayload): Promise<ApiResponse<void>> {
+    return this.client.post<void>("/customer/reset-password", payload);
+  }
+
+  // POST /customer/send-otp
+  sendOtp(payload: SendOtp): Promise<ApiResponse<void>> {
+    return this.client.post<void>("/customer/send-otp", payload);
+  }
+
+  // POST /customer/verify-otp
+  verifyAccount(payload: VerifyAccount): Promise<ApiResponse<void>> {
+    return this.client.post<void>("/customer/verify-otp", payload);
   }
 
   // POST /customer/logout

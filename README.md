@@ -303,7 +303,7 @@ All types are built in — no separate `@types` package needed.
 Exported types include:
 
 - Core: `ApiResponse`, `Pagination`, `PaginatedData`, `ArtisApiError`
-- Auth: `User`, `Token`, `RegisterPayload`, `LoginPayload`, `UpdateProfilePayload`, `RegisterResponse`, `LoginResponse`
+- Auth: `User`, `Token`, `RegisterPayload`, `LoginPayload`, `UpdateProfilePayload`, `ResetPasswordPayload`, `SendOtp`, `VerifyAccount`, `RegisterResponse`, `LoginResponse`
 - Storefront: `Category`, `HomePage`
 - Products: `Product`, `ProductImage`, `ProductListParams`
 - Orders: `OrderItemAddon`, `OrderItem`, `CreateOrderPayload`, `CreateOrderResponse`, `OrderTrackingItem`, `OrderTrackingTimelineEntry`, `OrderTrackingResponse`, `MyOrder`

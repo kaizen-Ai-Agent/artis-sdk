@@ -23,7 +23,6 @@ export interface Token {
 
 // ─── Auth payloads ────────────────────────────────────────────────────────────
 
-
 export interface RegisterPayload {
   firstname: string;
   lastname: string;
@@ -43,6 +42,22 @@ export interface UpdateProfilePayload {
   lastname?: string;
   email?: string;
   phone?: string;
+}
+
+export interface ResetPasswordPayload {
+  otp: number;
+  email: string;
+  new_password: string;
+  new_password_confirmation: string;
+}
+
+export interface SendOtp {
+  type: "password_reset" | "verification";
+  email: string;
+}
+
+export interface VerifyAccount {
+  otp: number;
 }
 
 // ─── Auth responses ────────────────────────────────────────────────────────────
