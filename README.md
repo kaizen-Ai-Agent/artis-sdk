@@ -15,13 +15,30 @@ npm install artis-sdk
 
 ## Setup
 
+The SDK works in two modes depending on where your code is running.
+
+**Development** — pass `baseUrl` pointing to your dev server:
+
 ```typescript
 import { initArtis } from "artis-sdk";
 
 const app = initArtis({
-  baseUrl: "https://api.yourstore.com",
+  baseUrl: "https://dev.yourstore.com",
   apiKey: process.env.ARTIS_API_KEY,
-  env: "prod", // 'local' | 'testing' | 'prod' | 'live'
+});
+```
+
+**Production** — omit `baseUrl` entirely. Requests automatically go to `/api/v1/`
+relative to the domain the template is installed on. So if a customer installs
+your template on `example.com`, all requests go to `example.com/api/v1/`. If
+another customer installs it on `another-example.com`, requests go to `another-example.com/api/v1/`.
+No configuration needed.
+
+```typescript
+import { initArtis } from "artis-sdk";
+
+const app = initArtis({
+  apiKey: process.env.ARTIS_API_KEY,
 });
 ```
 
@@ -87,16 +104,15 @@ const results = await app.products.search("sourdough");
 
 ## Auth
 
-The API key identifies your store on every request. The user token identifies
-the logged-in customer on top of that. The SDK holds the token in memory —
-you are responsible for persisting it in your own storage.
+The API key identifies you as a licensed developer on every request. The user
+token identifies the logged-in customer on top of that. The SDK holds the token
+in memory — you are responsible for persisting it in your own storage.
 
 ### Register
 
 Returns the new user and an access token.
 
 ```typescript
-// Register a new user and get an access token in response
 const res = await app.auth.register({
   firstname: "John",
   lastname: "Doe",
@@ -106,27 +122,22 @@ const res = await app.auth.register({
   phone: "08012345678",
 });
 
-// Set the token so subsequent requests go out authenticated
 if (res.success) {
   const { user, token } = res.data;
   app.setUserToken(token.access_token);
+  // persist however your app handles it
   localStorage.setItem("artis_token", token.access_token);
 }
 ```
 
 ### Login
 
-Returns an access token. Call `setUserToken` immediately after so all
-subsequent requests go out authenticated.
-
 ```typescript
-// Login an existing user and get an access token in response
 const res = await app.auth.login({
   email: "john@example.com",
   password: "password",
 });
 
-// Set the token so subsequent requests go out authenticated
 if (res.success) {
   app.setUserToken(res.data.token.access_token);
   localStorage.setItem("artis_token", res.data.token.access_token);
@@ -135,19 +146,15 @@ if (res.success) {
 
 ### Restore session on app boot
 
-If you have a token stored from a previous session, pass it at init time
-or call `setUserToken` after init:
-
 ```typescript
 // Option A — pass at init
 const app = initArtis({
-  baseUrl: "https://api.yourstore.com",
   apiKey: process.env.ARTIS_API_KEY,
   userToken: localStorage.getItem("artis_token") ?? undefined,
 });
 
 // Option B — set after init
-const app = initArtis({ baseUrl: "...", apiKey: "..." });
+const app = initArtis({ apiKey: process.env.ARTIS_API_KEY });
 const token = localStorage.getItem("artis_token");
 if (token) app.setUserToken(token);
 ```
@@ -155,7 +162,6 @@ if (token) app.setUserToken(token);
 ### Get current user
 
 ```typescript
-// Get the currently logged-in user's details
 const res = await app.auth.me();
 if (res.success) {
   console.log(res.data.fullname);
@@ -165,14 +171,12 @@ if (res.success) {
 ### Update profile
 
 ```typescript
-// Update the logged-in user's profile
 const res = await app.auth.updateProfile({ firstname: "Jane" });
 ```
 
 ### Logout
 
 ```typescript
-// Log out the current user and clear the token
 await app.auth.logout();
 app.clearUserToken();
 localStorage.removeItem("artis_token");
@@ -183,7 +187,6 @@ localStorage.removeItem("artis_token");
 ## Orders
 
 ```typescript
-// Create a new order
 const order = await app.orders.create({
   customer_name: "John Doe",
   customer_email: "john@example.com",
@@ -201,7 +204,6 @@ const order = await app.orders.create({
 ## Cart
 
 ```typescript
-// Calculate the total for a cart before checkout
 const calc = await app.cart.calculate({
   items: [{ product_id: 10, quantity: 2 }],
   delivery_type: "delivery",
@@ -213,10 +215,10 @@ const calc = await app.cart.calculate({
 ## Bookings
 
 ```typescript
-// Check available timeslots for consultations or appointments
+// Check available timeslots
 const slots = await app.bookings.availability();
 
-// Create a new booking for a consultation or appointment
+// Create a booking
 const booking = await app.bookings.create({
   customer_name: "Jane Doe",
   customer_email: "jane@example.com",
@@ -234,12 +236,11 @@ const booking = await app.bookings.create({
 Every method returns the full `ApiResponse<T>` envelope:
 
 ```typescript
-// Generic API response shape
 {
   success: boolean;
-  status: string; // e.g. "success"
-  status_code: number; // e.g. 200
-  message: string; // human-readable
+  status: string;
+  status_code: number;
+  message: string;
   data: T;
 }
 ```
@@ -247,14 +248,11 @@ Every method returns the full `ApiResponse<T>` envelope:
 Always check `success` before using `data`:
 
 ```typescript
-// Example: get a product by id and handle success and error cases
 const res = await app.products.getById(42);
 
-// Handle success case
 if (res.success) {
   console.log(res.data.name); // typed as Product
 } else {
-  // Handle error case
   console.log(res.status_code); // e.g. 404
   console.log(res.message); // e.g. "Product not found"
 }
@@ -267,7 +265,6 @@ if (res.success) {
 Paginated endpoints return a nested pagination object inside `data`:
 
 ```typescript
-// Generic paginated response shape
 {
   data: T[];
   pagination: {
@@ -287,16 +284,13 @@ The SDK returns the API response envelope and does not throw by default.
 Check `success` and handle errors using `status_code` and `message`.
 
 ```typescript
-// Example: tracking an order that doesn't exist
 const res = await app.orders.track("TEN-PAY-69ef51be845ff");
 
-// Handle error case
 if (!res.success) {
   console.error(res.status_code, res.message);
   return;
 }
 
-// Handle success case
 console.log(res.data);
 ```
 
@@ -318,7 +312,6 @@ Exported types include:
 - Business: `DaySchedule`, `OpeningHours`, `Business`, `Theme`, `Social`, `Settings`
 
 ```typescript
-// Example: importing types for type annotations
 import type {
   ApiResponse,
   PaginatedData,
@@ -328,20 +321,6 @@ import type {
   CreateOrderPayload,
   CartCalculationResponse,
 } from "artis-sdk";
-```
-
----
-
-## Environment switching
-
-```typescript
-// local / testing → prepends test- to the subdomain
-initArtis({ baseUrl: "https://api.artis.com", apiKey: "...", env: "testing" });
-// requests go to → https://test-api.artis.com
-
-// prod / live → uses baseUrl as-is
-initArtis({ baseUrl: "https://api.artis.com", apiKey: "...", env: "prod" });
-// requests go to → https://api.artis.com
 ```
 
 ---
@@ -360,20 +339,13 @@ npm run test    # run tests
 
 ## Contributing
 
-All contributions are welcome! If you find a bug or have a feature request, feel free to create an issue or a PR.
+All contributions are welcome! If you find a bug or have a feature request, feel free to open an issue or a PR.
 
-- Issues: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/issues)
-- Pull requests: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/pulls)
-
----
-
-## Support
-
-If you find this SDK helpful, please star the repo and share it with others. Your support keeps the project moving.
+- Issues: [github.com/kaizen-Ai-Agent/artis-sdk/issues](https://github.com/kaizen-Ai-Agent/artis-sdk/issues)
+- Pull requests: [github.com/kaizen-Ai-Agent/artis-sdk/pulls](https://github.com/kaizen-Ai-Agent/artis-sdk/pulls)
 
 ---
 
 ## License
 
-MIT License — see the LICENSE file for details: [link here](https://github.com/kaizen-Ai-Agent/artis-sdk/blob/main/LICENSE)
-
+MIT License — see the [LICENSE](https://github.com/kaizen-Ai-Agent/artis-sdk/blob/main/LICENSE) file for details.

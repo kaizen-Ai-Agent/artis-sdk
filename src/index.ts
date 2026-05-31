@@ -7,12 +7,26 @@ import { BusinessModule } from "./modules/business.js";
 import { CartModule } from "./modules/cart.js";
 import { BookingModule } from "./modules/booking.js";
 
-export type ArtisEnv = "local" | "testing" | "prod" | "live";
-
 export interface ArtisConfig {
-  /** Your store's API base URL */
-  baseUrl: string;
-  /** Your API key — keep this in environment variables, never hardcode it */
+  /**
+   * Your API base URL — only needed during development.
+   * In production this is omitted and requests go to /api/v1/ relative
+   * to whatever domain the template is installed on.
+   *
+   * @example
+   * // Development
+   * const app = initArtis({
+   *   baseUrl: 'https://dev.yourstore.com',
+   *   apiKey: 'your-api-key',
+   * })
+   *
+   * // Production — omit baseUrl entirely
+   * const app = initArtis({
+   *   apiKey: 'your-api-key',
+   * })
+   */
+  baseUrl?: string;
+  /** Your API key — identifies you as a licensed developer on every request */
   apiKey: string;
   /**
    * Optional customer token for authenticated endpoints (me, updateProfile, etc).
@@ -20,14 +34,11 @@ export interface ArtisConfig {
    *
    * @example
    * const app = initArtis({
-   *   baseUrl: '...',
    *   apiKey: '...',
    *   userToken: localStorage.getItem('artis_token') ?? undefined,
    * })
    */
   userToken?: string;
-  /** Switches between test and production endpoints automatically */
-  env?: ArtisEnv;
 }
 
 export class ArtisApp {
@@ -42,16 +53,11 @@ export class ArtisApp {
   private client: HttpClient;
 
   constructor(config: ArtisConfig) {
-    const clientConfig = {
-      baseUrl: this.resolveBaseUrl(config),
+    this.client = new HttpClient({
+      baseUrl: config.baseUrl,
       apiKey: config.apiKey,
-    } as const;
-
-    this.client = new HttpClient(
-      config.userToken !== undefined
-        ? { ...clientConfig, userToken: config.userToken }
-        : clientConfig,
-    );
+      userToken: config.userToken,
+    });
 
     this.storefront = new StorefrontModule(this.client);
     this.products = new ProductsModule(this.client);
@@ -89,35 +95,22 @@ export class ArtisApp {
   clearUserToken(): void {
     this.client.setUserToken(undefined);
   }
-
-  private resolveBaseUrl(config: ArtisConfig): string {
-    if (!config.env) return config.baseUrl;
-
-    if (config.env === "local" || config.env === "testing") {
-      try {
-        const url = new URL(config.baseUrl);
-        return `${url.protocol}//test-${url.host}${url.pathname}`;
-      } catch {
-        return config.baseUrl;
-      }
-    }
-
-    return config.baseUrl; // prod / live
-  }
 }
 
 /**
  * Initialize the Artis SDK. Call this once and reuse the returned instance.
  *
  * @example
+ * // Development
  * const app = initArtis({
- *   baseUrl: 'https://api.yourstore.com',
+ *   baseUrl: 'https://dev.yourstore.com',
  *   apiKey: process.env.ARTIS_API_KEY,
- *   env: 'prod',
  * })
  *
- * const home = await app.storefront.getHome()
- * const products = await app.products.list({ page: 1 })
+ * // Production — no baseUrl, requests go to /api/v1/ on the installed domain
+ * const app = initArtis({
+ *   apiKey: process.env.ARTIS_API_KEY,
+ * })
  */
 export function initArtis(config: ArtisConfig): ArtisApp {
   return new ArtisApp(config);

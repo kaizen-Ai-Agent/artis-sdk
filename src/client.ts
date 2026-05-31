@@ -1,10 +1,10 @@
 import { ApiResponse } from "./types/common.js";
 
 export interface HttpClientConfig {
-  baseUrl: string;
+  baseUrl?: string | undefined;
   apiKey: string;
   // Optional default token for customer-specific endpoints.
-  userToken?: string;
+  userToken?: string | undefined;
 }
 
 export class HttpClient {
@@ -13,10 +13,16 @@ export class HttpClient {
   private userToken: string | undefined;
 
   constructor(config: HttpClientConfig) {
-    // Normalize baseUrl so it always has a trailing slash
-    this.baseUrl = config.baseUrl.endsWith("/")
-      ? config.baseUrl
-      : `${config.baseUrl}/`;
+    if (config.baseUrl) {
+      // Development — use the provided baseUrl, normalize trailing slash
+      this.baseUrl = config.baseUrl.endsWith("/")
+        ? config.baseUrl
+        : `${config.baseUrl}/`;
+    } else {
+      // Production — requests resolve relative to the installed domain
+      this.baseUrl = "/api/v1/";
+    }
+
     this.apiKey = config.apiKey;
     this.userToken = config.userToken;
   }
@@ -32,7 +38,7 @@ export class HttpClient {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Accept: "application/json",
-      // API key always goes on every request — identifies the store
+      // API key on every request — identifies the licensed developer
       "X-API-Key": this.apiKey,
     };
 
