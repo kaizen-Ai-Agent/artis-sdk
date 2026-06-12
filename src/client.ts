@@ -27,6 +27,10 @@ export class HttpClient {
     this.userToken = config.userToken;
   }
 
+  private isAbsoluteUrl(url: string): boolean {
+    return /^https?:\/\//i.test(url);
+  }
+
   /** Update the user token after login.
    * Called internally by ArtisApp.setUserToken()
    */
@@ -54,17 +58,33 @@ export class HttpClient {
     params?: Record<string, string | number | boolean>,
   ): string {
     const cleanPath = path.startsWith("/") ? path.slice(1) : path;
-    const url = new URL(cleanPath, this.baseUrl);
+    const queryString = params
+      ? new URLSearchParams(
+          Object.entries(params)
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)]),
+        ).toString()
+      : "";
 
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.set(key, String(value));
-        }
-      });
+    if (this.isAbsoluteUrl(this.baseUrl)) {
+      const url = new URL(cleanPath, this.baseUrl);
+
+      if (queryString) {
+        url.search = queryString;
+      }
+
+      return url.toString();
     }
 
-    return url.toString();
+    const normalizedBase = this.baseUrl.startsWith("/")
+      ? this.baseUrl
+      : `/${this.baseUrl}`;
+    const relativeUrl = `${normalizedBase.endsWith("/") ? normalizedBase : `${normalizedBase}/`}${cleanPath}`.replace(
+      /\/+/g,
+      "/",
+    );
+
+    return queryString ? `${relativeUrl}?${queryString}` : relativeUrl;
   }
 
   private buildJsonInit(method: string, body?: unknown): RequestInit {

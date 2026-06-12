@@ -28,11 +28,22 @@ const app = initArtis({
 });
 ```
 
-**Production** — omit `baseUrl` entirely. Requests automatically go to `/api/v1/`
-relative to the domain the template is installed on. So if a customer installs
-your template on `example.com`, all requests go to `example.com/api/v1/`. If
-another customer installs it on `another-example.com`, requests go to `another-example.com/api/v1/`.
+**Browser production** — omit `baseUrl` entirely. Requests automatically go to
+`/api/v1/` relative to the domain the template is installed on. So if a
+customer installs your template on `example.com`, all requests go to
+`example.com/api/v1/`. If another customer installs it on
+`another-example.com`, requests go to `another-example.com/api/v1/`.
 No configuration needed.
+
+**Server-side rendering or Node.js** — pass an absolute `baseUrl`.
+```typescript
+import { initArtis } from "artis-sdk";
+
+const app = initArtis({
+  baseUrl: "https://example.com",
+  apiKey: process.env.ARTIS_API_KEY,
+});
+```
 
 ```typescript
 import { initArtis } from "artis-sdk";

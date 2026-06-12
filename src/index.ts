@@ -9,9 +9,11 @@ import { BookingModule } from "./modules/booking.js";
 
 export interface ArtisConfig {
   /**
-   * Your API base URL — only needed during development.
-   * In production this is omitted and requests go to /api/v1/ relative
-   * to whatever domain the template is installed on.
+   * Your API base URL.
+   * In browser-based production apps this can be omitted and requests go to
+   * /api/v1/ relative to the installed domain.
+   * If you call the SDK from Node.js or server-side rendering, pass an
+   * absolute URL.
    *
    * @example
    * // Development
@@ -20,8 +22,14 @@ export interface ArtisConfig {
    *   apiKey: 'your-api-key',
    * })
    *
-   * // Production — omit baseUrl entirely
+   * // Browser production — omit baseUrl entirely
    * const app = initArtis({
+   *   apiKey: 'your-api-key',
+   * })
+   *
+   * // Server-side rendering or Node.js — pass an absolute URL
+   * const app = initArtis({
+   *   baseUrl: 'https://example.com',
    *   apiKey: 'your-api-key',
    * })
    */
@@ -107,8 +115,14 @@ export class ArtisApp {
  *   apiKey: process.env.ARTIS_API_KEY,
  * })
  *
- * // Production — no baseUrl, requests go to /api/v1/ on the installed domain
+ * // Browser production — no baseUrl, requests go to /api/v1/ on the installed domain
  * const app = initArtis({
+ *   apiKey: process.env.ARTIS_API_KEY,
+ * })
+ *
+ * // Server-side rendering or Node.js — pass an absolute URL
+ * const app = initArtis({
+ *   baseUrl: 'https://example.com',
  *   apiKey: process.env.ARTIS_API_KEY,
  * })
  */

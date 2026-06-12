@@ -49,6 +49,24 @@ describe("HttpClient", () => {
     });
   });
 
+  it("uses the default relative base URL when none is provided", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: async () => okResponse,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = new HttpClient({
+      apiKey: "test-key",
+    });
+
+    await client.get("/home", { page: 1 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
+
+    expect(url).toBe("/api/v1/home?page=1");
+  });
+
   it("uses default user token when configured", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       json: async () => okResponse,
