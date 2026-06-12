@@ -240,6 +240,10 @@ const updatedItem = await app.cart.update(
   },
 );
 
+const deletedItem = await app.cart.delete(
+  "019ea1f3-3128-7157-953d-c5f0a6ce3a1c",
+);
+
 const calc = await app.cart.calculate({
   items: [{ product_id: 10, quantity: 2 }],
   delivery_type: "delivery",
@@ -343,7 +347,7 @@ Exported types include:
 - Storefront: `Category`, `HomePage`
 - Products: `Product`, `ProductImage`, `ProductListParams`
 - Orders: `OrderItemAddon`, `OrderItem`, `CreateOrderPayload`, `CreateOrderResponse`, `OrderTrackingItem`, `OrderTrackingTimelineEntry`, `OrderTrackingResponse`, `MyOrder`
-- Cart: `CartItemInput`, `CartItemAddonInput`, `CartCreateItemInput`, `CartUpdatePayload`, `CartVariant`, `CartItem`, `CartCalculatePayload`, `CartCreatePayload`, `CartCalculatedItem`, `CartSummary`, `CartCalculationResponse`, `CartCreateResponseData`, `CartCreateResponse`, `CartUpdateResponse`
+- Cart: `CartItemInput`, `CartItemAddonInput`, `CartCreateItemInput`, `CartUpdatePayload`, `CartVariant`, `CartItem`, `CartCalculatePayload`, `CartCreatePayload`, `CartCalculatedItem`, `CartSummary`, `CartCalculationResponse`, `CartCreateResponseData`, `CartCreateResponse`, `CartUpdateResponse`, `CartDeleteResponse`
 - Bookings: `BookingAvailability`, `CreateBookingPayload`, `CreateBookingResponse`
 - Business: `DaySchedule`, `OpeningHours`, `Business`, `Theme`, `Social`, `Settings`
 

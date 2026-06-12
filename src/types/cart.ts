@@ -100,3 +100,7 @@ export interface CartCreateResponse {
 export interface CartUpdateResponse {
   data: CartItem;
 }
+
+export interface CartDeleteResponse {
+  data: CartItem;
+}

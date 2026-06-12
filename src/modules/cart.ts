@@ -5,6 +5,7 @@ import {
   CartCreateResponse,
   CartCalculatePayload,
   CartCalculationResponse,
+  CartDeleteResponse,
   CartUpdatePayload,
   CartUpdateResponse,
 } from "../types/cart.js";
@@ -33,5 +34,10 @@ export class CartModule {
     payload: CartUpdatePayload,
   ): Promise<ApiResponse<CartUpdateResponse>> {
     return this.client.put<CartUpdateResponse>(`/cart/${id}`, payload);
+  }
+
+  // DELETE /cart/:id
+  delete(id: string): Promise<ApiResponse<CartDeleteResponse>> {
+    return this.client.delete<CartDeleteResponse>(`/cart/${id}`);
   }
 }
