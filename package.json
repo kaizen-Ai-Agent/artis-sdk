@@ -1,6 +1,6 @@
 {
   "name": "artis-sdk",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Official JavaScript/TypeScript SDK for the Artis platform",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
