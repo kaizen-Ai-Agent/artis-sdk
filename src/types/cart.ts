@@ -5,6 +5,21 @@ export interface CartItemInput {
   quantity: number;
 }
 
+export interface CartItemAddonInput {
+  product_id: number;
+  quantity: number;
+  variant_combination_id: number;
+}
+
+export interface CartCreateItemInput extends CartItemInput {
+  customizations?: string[];
+  addons?: CartItemAddonInput[];
+}
+
+export interface CartUpdatePayload {
+  quantity: number;
+}
+
 // ─── Cart calculated items ───────────────────────────────────────────────────────────────────
 
 export interface CartCalculatedItem {
@@ -14,6 +29,31 @@ export interface CartCalculatedItem {
   quantity: number;
   line_total: number;
   image_url: string;
+}
+
+export interface CartVariant {
+  id: number;
+  sku: string;
+  additional_price: string;
+}
+
+export interface CartItem {
+  id: string;
+  cart_id: string;
+  product_id: number;
+  product_name: string;
+  product_slug?: string;
+  image_url: string;
+  unit_price: string | number;
+  quantity: number;
+  line_total: number;
+  customizations: string[];
+  parent_item_id: string | null;
+  variant: CartVariant | null;
+  stock_status: string;
+  created_at: string;
+  updated_at: string;
+  addons?: CartItem[];
 }
 
 // ─── Cart summary ───────────────────────────────────────────────────────────────────
@@ -32,9 +72,31 @@ export interface CartCalculatePayload {
   delivery_type: string;
 }
 
+export interface CartCreatePayload {
+  items: CartCreateItemInput[];
+}
+
 // ─── Cart responses ───────────────────────────────────────────────────────────────────
 
 export interface CartCalculationResponse {
   items: CartCalculatedItem[];
   summary: CartSummary;
+}
+
+export interface CartCreateResponseData {
+  id: string;
+  items: CartItem[];
+  summary: {
+    subtotal: number;
+  };
+}
+
+export interface CartCreateResponse {
+  success: boolean;
+  data: CartCreateResponseData;
+}
+
+export interface CartUpdateResponse {
+  success: boolean;
+  data: CartItem;
 }

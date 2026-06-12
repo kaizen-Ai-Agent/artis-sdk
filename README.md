@@ -36,6 +36,7 @@ customer installs your template on `example.com`, all requests go to
 No configuration needed.
 
 **Server-side rendering or Node.js** — pass an absolute `baseUrl`.
+
 ```typescript
 import { initArtis } from "artis-sdk";
 
@@ -215,6 +216,30 @@ const order = await app.orders.create({
 ## Cart
 
 ```typescript
+const cart = await app.cart.create({
+  items: [
+    {
+      product_id: 1,
+      quantity: 3,
+      customizations: ["Classic Elegant"],
+      addons: [
+        {
+          product_id: 5,
+          quantity: 3,
+          variant_combination_id: 121,
+        },
+      ],
+    },
+  ],
+});
+
+const updatedItem = await app.cart.update(
+  "019ea1f3-3128-7157-953d-c5f0a6ce3a1c",
+  {
+    quantity: 5,
+  },
+);
+
 const calc = await app.cart.calculate({
   items: [{ product_id: 10, quantity: 2 }],
   delivery_type: "delivery",
@@ -318,7 +343,7 @@ Exported types include:
 - Storefront: `Category`, `HomePage`
 - Products: `Product`, `ProductImage`, `ProductListParams`
 - Orders: `OrderItemAddon`, `OrderItem`, `CreateOrderPayload`, `CreateOrderResponse`, `OrderTrackingItem`, `OrderTrackingTimelineEntry`, `OrderTrackingResponse`, `MyOrder`
-- Cart: `CartItemInput`, `CartCalculatePayload`, `CartCalculatedItem`, `CartSummary`, `CartCalculationResponse`
+- Cart: `CartItemInput`, `CartItemAddonInput`, `CartCreateItemInput`, `CartUpdatePayload`, `CartVariant`, `CartItem`, `CartCalculatePayload`, `CartCreatePayload`, `CartCalculatedItem`, `CartSummary`, `CartCalculationResponse`, `CartCreateResponseData`, `CartCreateResponse`, `CartUpdateResponse`
 - Bookings: `BookingAvailability`, `CreateBookingPayload`, `CreateBookingResponse`
 - Business: `DaySchedule`, `OpeningHours`, `Business`, `Theme`, `Social`, `Settings`
 
@@ -330,6 +355,8 @@ import type {
   Category,
   LoginResponse,
   CreateOrderPayload,
+  CartCreatePayload,
+  CartUpdatePayload,
   CartCalculationResponse,
 } from "artis-sdk";
 ```
