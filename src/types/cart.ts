@@ -31,6 +31,8 @@ export interface CartCalculatedItem {
   image_url: string;
 }
 
+// ─── Cart items ───────────────────────────────────────────────────────────────────
+
 export interface CartVariant {
   id: number;
   sku: string;
@@ -92,11 +94,9 @@ export interface CartCreateResponseData {
 }
 
 export interface CartCreateResponse {
-  success: boolean;
   data: CartCreateResponseData;
 }
 
 export interface CartUpdateResponse {
-  success: boolean;
   data: CartItem;
 }
